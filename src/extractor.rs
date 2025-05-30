@@ -8,6 +8,12 @@ use log::{debug, info};
 
 use crate::{AMediaFormat, CodecInputBuffer, MediaFormat, MediaStatus};
 
+pub enum SeekMode {
+    SeekClosestSync,
+    SeekNextSync,
+    SeekPreviousSync
+}
+
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 struct AMediaExtractor {
@@ -70,6 +76,9 @@ extern "C" {
 
     /// Since: API 21
     fn AMediaExtractor_advance(extractor: *mut AMediaExtractor) -> bool;
+
+    /// Since: API 21
+    fn AMediaExtractor_seekTo(extractor: *mut AMediaExtractor, seek_pos_us: i64, mode: i32) -> i32;
 }
 
 /// MediaExtractor is a demuxer that opens a file or resource and demuxes the data to hand over to MediaCodec
@@ -177,6 +186,12 @@ impl MediaExtractor {
     /// Returns whether MediaExtractor still has packets to read
     pub fn has_next(&self) -> bool {
         self.has_next
+    }
+    
+    pub fn seek_to(&self, pos_us: i64, mode: SeekMode) {
+        unsafe {
+            AMediaExtractor_seekTo(self.inner, pos_us, mode as i32);
+        }
     }
 }
 
