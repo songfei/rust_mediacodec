@@ -69,5 +69,3 @@ targets = [
     "i686-linux-android",
     "x86_64-linux-android",
 ]
-[dependencies]
-log = "0.4.27"
